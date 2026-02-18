@@ -9,7 +9,7 @@ const folderRoutes = require('./src/routes/folder_routes');
 const trashRoutes = require('./src/routes/trash_routes');
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => { console.log(`${req.method} ${req.url}`); next();});
@@ -20,7 +20,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/folders', folderRoutes);
 app.use('/api/trash', trashRoutes);
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/documents')
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB error:', err));
 // Test route

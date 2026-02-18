@@ -9,7 +9,7 @@ const { transporter } = require('../config/Email.js');
 const generateToken = () => { return crypto.randomBytes(32).toString('hex');};
 // Email template for reset password
 const getResetPasswordEmail = (token) => {
-  const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
   return {
     subject: 'Reset Your Password - MyDrive',
     html: `

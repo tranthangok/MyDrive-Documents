@@ -10,7 +10,7 @@ const Invitation = require('../models/Invitation');
 const { transporter } = require('../config/Email');
 // Email template for invitation
 const getInvitationEmail = (inviterName, documentTitle, token, permission) => {
-  const acceptLink = `http://localhost:3000/invitation/${token}`;
+  const acceptLink = `${process.env.FRONTEND_URL}/invitation/${token}`;
   return {
     subject: `${inviterName} invited you to collaborate on "${documentTitle}"`,
     html: `
