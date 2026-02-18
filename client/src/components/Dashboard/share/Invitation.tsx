@@ -33,7 +33,7 @@ const AcceptInvitation: React.FC = () => {
   }, [token]);
 
   const fetchInvitation = async () => {
-    const response = await fetch(`http://localhost:5000/api/documents/invitation/${token}`);
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/invitation/${token}`);
     
     if (!response.ok) {
       throw new Error('Invitation not found or expired');
@@ -48,7 +48,7 @@ const AcceptInvitation: React.FC = () => {
   const handleAcceptInvitation = async () => {
     setProcessing(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/documents/invitation/${token}/claim`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/invitation/${token}/claim`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -93,7 +93,7 @@ const AcceptInvitation: React.FC = () => {
     setProcessing(true);
     try {
       // signup
-      const signupResponse = await fetch('http://localhost:5000/api/auth/signup', {
+      const signupResponse = await fetch('${import.meta.env.VITE_BACKEND_URL}/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ const AcceptInvitation: React.FC = () => {
       }
       
       // Signup successful, claim invitation
-      const claimResponse = await fetch(`http://localhost:5000/api/documents/invitation/${token}/claim`, {
+      const claimResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/invitation/${token}/claim`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

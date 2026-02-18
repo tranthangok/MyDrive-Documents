@@ -53,11 +53,12 @@ const Trash: React.FC = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/trash', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/trash`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
+
 
       if (!response.ok) {
         throw new Error('Failed to fetch trash items');
@@ -83,7 +84,7 @@ const Trash: React.FC = () => {
     if (!itemToRestore) return;
     const token = getToken();
     if (!token) return;
-    const response = await fetch(`http://localhost:5000/api/trash/${itemToRestore.id}/restore`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/trash/${itemToRestore.id}/restore`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -112,7 +113,7 @@ const Trash: React.FC = () => {
     if (!itemToDelete) return;
     const token = getToken();
     if (!token) return;
-    const response = await fetch(`http://localhost:5000/api/trash/${itemToDelete.id}`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/trash/${itemToDelete.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -135,7 +136,7 @@ const Trash: React.FC = () => {
   const handleCleanTrash = async () => {
     const token = getToken();
     if (!token) return;
-    const response = await fetch('http://localhost:5000/api/trash', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/trash`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -158,7 +159,7 @@ const Trash: React.FC = () => {
     if (selectedItems.length === 0) return;
     const token = getToken();
     if (!token) return;
-    const response = await fetch('http://localhost:5000/api/trash/restore-multiple', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/trash/restore-multiple`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

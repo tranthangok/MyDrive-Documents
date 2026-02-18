@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
   const fetchFolderName = async (folderId: string) => {
     const token = getToken();
     if (!token) return;
-    const response = await fetch(`http://localhost:5000/api/folders/${folderId}`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/folders/${folderId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (response.ok) {
@@ -134,9 +134,9 @@ const Dashboard: React.FC = () => {
         return;
       }
       // Fetch folders (owned by user)
-      let foldersUrl = 'http://localhost:5000/api/folders';
+      let foldersUrl = `${import.meta.env.VITE_BACKEND_URL}/api/folders`;
       if (currentFolderId) {
-        foldersUrl = `http://localhost:5000/api/folders/${currentFolderId}`;
+        foldersUrl = `${import.meta.env.VITE_BACKEND_URL}/api/folders/${currentFolderId}`;
       }
       const foldersResponse = await fetch(foldersUrl, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -146,7 +146,7 @@ const Dashboard: React.FC = () => {
       }
       const foldersData = await foldersResponse.json();
       // Fetch documents
-      let docsUrl = 'http://localhost:5000/api/documents';
+      let docsUrl = `${import.meta.env.VITE_BACKEND_URL}/api/documents`;
       if (currentFolderId) {
         docsUrl += `?folderId=${currentFolderId}`;
       }
@@ -170,7 +170,7 @@ const Dashboard: React.FC = () => {
   const fetchAllFolders = async () => {
     const token = getToken();
     if (!token) return;
-    const response = await fetch('http://localhost:5000/api/folders', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/folders`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -216,7 +216,7 @@ const Dashboard: React.FC = () => {
   const fetchSharedDocuments = async () => {
     const token = getToken();
     if (!token) return;
-    const response = await fetch('http://localhost:5000/api/documents/shared', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/shared`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -326,8 +326,8 @@ const Dashboard: React.FC = () => {
     const isDocument = 'title' in itemToDelete;
     // endpoint seperately for document or folder
     const url = isDocument 
-      ? 'http://localhost:5000/api/trash/document'
-      : 'http://localhost:5000/api/trash/folder';
+      ? `${import.meta.env.VITE_BACKEND_URL}/api/trash/document`
+      : `${import.meta.env.VITE_BACKEND_URL}/api/trash/folder`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -367,7 +367,7 @@ const Dashboard: React.FC = () => {
     if (!itemToClone || !cloneTitle.trim()) return;
     const token = getToken();
     if (!token) return;
-    const allDocsResponse = await fetch('http://localhost:5000/api/documents', {
+    const allDocsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     let finalTitle = cloneTitle.trim();
@@ -398,7 +398,7 @@ const Dashboard: React.FC = () => {
         finalTitle = `${baseName} ${nextNumber}`;
       }
     }
-    const response = await fetch('http://localhost:5000/api/documents', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -435,11 +435,11 @@ const Dashboard: React.FC = () => {
       if (!token) return;
       const isDocument = 'title' in itemToEdit;
       const url = isDocument
-        ? `http://localhost:5000/api/documents/${itemToEdit._id}`
-        : `http://localhost:5000/api/folders/${itemToEdit._id}`;
+        ? `${import.meta.env.VITE_BACKEND_URL}/api/documents/${itemToEdit._id}`
+        : `${import.meta.env.VITE_BACKEND_URL}/api/folders/${itemToEdit._id}`;
 
       if (isDocument) {
-        const allDocsResponse = await fetch('http://localhost:5000/api/documents', {
+        const allDocsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -456,7 +456,7 @@ const Dashboard: React.FC = () => {
           }
         }
       } else {
-        const allFoldersResponse = await fetch('http://localhost:5000/api/folders', {
+        const allFoldersResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/folders`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -531,7 +531,7 @@ const Dashboard: React.FC = () => {
       const isDocument = 'title' in selectedItem;
       
       if (isDocument) {
-        const url = `http://localhost:5000/api/documents/${selectedItem._id}`;
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/documents/${selectedItem._id}`;
         const response = await fetch(url, {
           method: 'PUT',
           headers: {
@@ -557,7 +557,7 @@ const Dashboard: React.FC = () => {
           return;
         }
 
-        const url = `http://localhost:5000/api/folders/${selectedItem._id}`;
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/folders/${selectedItem._id}`;
         const response = await fetch(url, {
           method: 'PUT',
           headers: {
@@ -590,7 +590,7 @@ const Dashboard: React.FC = () => {
       const token = getToken();
       if (!token) return;
 
-      const response = await fetch('http://localhost:5000/api/documents', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -624,7 +624,7 @@ const Dashboard: React.FC = () => {
       const token = getToken();
       if (!token) return;
 
-      const response = await fetch('http://localhost:5000/api/folders', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/folders`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

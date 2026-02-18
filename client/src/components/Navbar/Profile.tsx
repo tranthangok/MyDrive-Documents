@@ -30,7 +30,7 @@ const Profile: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:5000/api/auth/user', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -101,7 +101,7 @@ const Profile: React.FC = () => {
     setIsLoading(true);
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/auth/update-name', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/update-name`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ const Profile: React.FC = () => {
     setIsLoading(true);
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/auth/update-password', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/update-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

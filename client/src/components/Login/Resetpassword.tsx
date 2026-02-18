@@ -32,7 +32,7 @@ const ResetPassword: React.FC = () => {
 
   const verifyToken = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/reset/verify-token', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reset/verify-token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ const ResetPassword: React.FC = () => {
     if (!validateForm()) return;
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/reset/reset-password', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reset/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

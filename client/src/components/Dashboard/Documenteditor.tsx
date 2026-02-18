@@ -164,7 +164,7 @@ const DocumentEditor: React.FC = () => {
     const checkForChanges = async () => {
       const token = getToken();
       if (!token) return;
-      const response = await fetch(`http://localhost:5000/api/documents/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -196,7 +196,7 @@ const DocumentEditor: React.FC = () => {
       const token = getToken();
       if (!token) return navigate('/login');
 
-      const response = await fetch(`http://localhost:5000/api/documents/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -226,7 +226,7 @@ const DocumentEditor: React.FC = () => {
   const fetchSharedUsers = async () => {
     const token = getToken();
     if (!token) return;
-    const response = await fetch(`http://localhost:5000/api/documents/${id}/shared`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}/shared`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (response.ok) {
@@ -240,7 +240,7 @@ const DocumentEditor: React.FC = () => {
   const updateActiveEditor = async () => {
     const token = getToken();
     if (!token) return;
-    await fetch(`http://localhost:5000/api/documents/${id}/active`, {
+    await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}/active`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -251,7 +251,7 @@ const DocumentEditor: React.FC = () => {
   const checkActiveEditors = async () => {
     const token = getToken();
     if (!token) return;
-    const response = await fetch(`http://localhost:5000/api/documents/${id}/active`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}/active`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (response.ok) {
@@ -283,7 +283,7 @@ const DocumentEditor: React.FC = () => {
       if (!token) return navigate('/login');
 
       const isNew = id === 'new';
-      const url = isNew ? 'http://localhost:5000/api/documents' : `http://localhost:5000/api/documents/${id}`;
+      const url = isNew ? `${import.meta.env.VITE_BACKEND_URL}/api/documents` : `${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}`;
 
       const response = await fetch(url, {
         method: isNew ? 'POST' : 'PUT',
@@ -376,7 +376,7 @@ const DocumentEditor: React.FC = () => {
   const handleSendInvite = async () => {
     if (!shareEmail.trim()) return;
     const token = getToken();
-    const response = await fetch(`http://localhost:5000/api/documents/${id}/invite`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}/invite`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -410,7 +410,7 @@ const DocumentEditor: React.FC = () => {
 
   const handleRemoveShare = async (userId: string) => {
     const token = getToken();
-    const response = await fetch(`http://localhost:5000/api/documents/${id}/share/${userId}`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}/share/${userId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -421,7 +421,7 @@ const DocumentEditor: React.FC = () => {
 
   const generateShareLink = async () => {
     const token = getToken();
-    const response = await fetch(`http://localhost:5000/api/documents/${id}/generate-link`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}/generate-link`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
