@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { User, Mail, Lock, Eye, EyeOff, UserPlus, ArrowLeft, CheckCircle } from 'lucide-react';
 import './Signup.css';
 
@@ -9,14 +9,32 @@ interface SignUpProps {
 
 const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [invitationData, setInvitationData] = useState<any>(null);
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: ''});
   const [errors, setErrors] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [touched, setTouched] = useState({ name: false, email: false, password: false, confirmPassword: false});
+  useEffect(() => {
+    if (location.state?.fromInvitation) {
+      setInvitationData({
+        email: location.state.email,
+        invitationToken: location.state.invitationToken,
+        documentId: location.state.documentId,
+        permission: location.state.permission
+      });
+      
+      // Pre-fill email
+      setFormData(prev => ({
+        ...prev,
+        email: location.state.email
+      }));
+    }
+  }, [location.state]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,6 +62,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
   const validateForm = () => {
     let isValid = true;
     const newErrors = { name: '', email: '', password: '', confirmPassword: ''};
+    
     // Validate Name
     if (!formData.name.trim()) {
       newErrors.name = 'Full name is required';
@@ -58,6 +77,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
       newErrors.name = 'Name can only contain letters and spaces';
       isValid = false;
     }
+    
     // Validate Email
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -66,6 +86,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
       newErrors.email = 'Please enter a valid email';
       isValid = false;
     }
+    
     // Validate Password
     if (!formData.password) {
       newErrors.password = 'Password is required';
@@ -77,6 +98,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
       newErrors.password = 'Password must contain uppercase, lowercase and number';
       isValid = false;
     }
+    
     // Validate Confirm Password
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
@@ -85,16 +107,43 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
       newErrors.confirmPassword = 'Passwords do not match';
       isValid = false;
     }
+    
     setErrors(newErrors);
     return isValid;
+  };
+
+  const claimInvitation = async (token: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/documents/invitation/${token}/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && !data.requiresSignup) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        return { success: true, documentId: data.documentId };
+      }
+      return { success: false };
+    } catch (error) {
+      console.error('Failed to claim invitation:', error);
+      return { success: false };
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setServerError('');
     setSuccessMessage('');
+    
     if (!validateForm()) return;
+    
     setIsLoading(true);
+    
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
         method: 'POST',
@@ -107,31 +156,55 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
           password: formData.password,
         }),
       });
+      
       const data = await response.json();
+      
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
-      // token save
+      
+      // Token save
       if (data.token) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
       }
-      setSuccessMessage('Account created successfully! Redirecting to login...');
-      // redirect 2 giây
+      
+      setSuccessMessage('Account created successfully!');
+      
+      if (invitationData) {
+        const claimResult = await claimInvitation(invitationData.invitationToken);
+        
+        if (claimResult.success) {
+          setTimeout(() => {
+            navigate(`/document/${claimResult.documentId}`);
+          }, 1500);
+          return;
+        }
+      }
+      
       setTimeout(() => {
         if (onSignUpSuccess) {
           onSignUpSuccess();
         } else {
-          navigate('/login');
+          navigate('/dashboard');
         }
-      }, 2000);
+      }, 1500);
+      
     } catch (error: any) {
       setServerError(error.message || 'Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-  const handleSignInClick = () => { navigate('/login');}
-  const handleBackToHome = () => { navigate('/');};
+
+  const handleSignInClick = () => { 
+    navigate('/login', { state: invitationData ? { fromInvitation: true, email: invitationData.email } : undefined }); 
+  };
+  
+  const handleBackToHome = () => { 
+    navigate('/');
+  };
+
   // Password strength
   const getPasswordStrength = (password: string) => {
     if (!password) return null;
@@ -152,11 +225,29 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
   return (
     <div className="signup-container">
       <div className="signup-card">
-        <button className="back-home-btn"onClick={handleBackToHome}aria-label="Back to home"disabled={isLoading}><ArrowLeft size={20} /><span>Back to Home</span></button>
+        <button className="back-home-btn" onClick={handleBackToHome} aria-label="Back to home" disabled={isLoading}>
+          <ArrowLeft size={20} />
+          <span>Back to Home</span>
+        </button>
+        
         <div className="signup-header">
           <h1>Create Account</h1>
           <p>Join us and get started today</p>
         </div>
+        {invitationData && (
+          <div className="invitation-banner">
+            <div className="invitation-icon">📄</div>
+            <div className="invitation-details">
+              <h4>You're accepting an invitation</h4>
+              <p>Document access will be granted after signup</p>
+              <p className="invitation-permission">
+                Permission: <span className={`permission-badge ${invitationData.permission}`}>
+                  {invitationData.permission}
+                </span>
+              </p>
+            </div>
+          </div>
+        )}
 
         {successMessage && (
           <div className="success-message">
@@ -176,28 +267,72 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
             <label htmlFor="name">Full Name</label>
             <div className={`input-wrapper ${touched.name && errors.name ? 'error' : ''}`}>
               <User className="input-icon" />
-              <input type="text" id="name" name="name" placeholder="Enter your full name" value={formData.name} onChange={handleChange} onBlur={() => handleBlur('name')} disabled={isLoading}/>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                placeholder="Enter your full name" 
+                value={formData.name} 
+                onChange={handleChange} 
+                onBlur={() => handleBlur('name')} 
+                disabled={isLoading}
+              />
             </div>
             <small className="input-hint">Letters and spaces only, no numbers</small>
-            {touched.name && errors.name && ( <span className="field-error">{errors.name}</span>)}
+            {touched.name && errors.name && ( 
+              <span className="field-error">{errors.name}</span>
+            )}
           </div>
+          
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
             <div className={`input-wrapper ${touched.email && errors.email ? 'error' : ''}`}>
               <Mail className="input-icon" />
-              <input type="email" id="email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} onBlur={() => handleBlur('email')} disabled={isLoading}/>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                placeholder="you@example.com" 
+                value={formData.email} 
+                onChange={handleChange} 
+                onBlur={() => handleBlur('email')} 
+                disabled={isLoading || !!invitationData}
+                readOnly={!!invitationData}
+              />
             </div>
-            {touched.email && errors.email && (<span className="field-error">{errors.email}</span>)}
+            {touched.email && errors.email && (
+              <span className="field-error">{errors.email}</span>
+            )}
           </div>
+          
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <div className="input-wrapper">
               <Lock className="input-icon" />
-              <input type={showPassword ? 'text' : 'password'} id="password" name="password" placeholder="Create a password" value={formData.password} onChange={handleChange} onBlur={() => handleBlur('password')} disabled={isLoading}/>
-              <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? 'Hide password' : 'Show password'} disabled={isLoading}> {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}</button>
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                id="password" 
+                name="password" 
+                placeholder="Create a password" 
+                value={formData.password} 
+                onChange={handleChange} 
+                onBlur={() => handleBlur('password')} 
+                disabled={isLoading}
+              />
+              <button 
+                type="button" 
+                className="password-toggle" 
+                onClick={() => setShowPassword(!showPassword)} 
+                aria-label={showPassword ? 'Hide password' : 'Show password'} 
+                disabled={isLoading}
+              > 
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
             <small className="input-hint">Must contain at least 6 characters, one uppercase, one lowercase and one number</small>
-            {touched.password && errors.password && (<span className="field-error">{errors.password}</span>)}
+            {touched.password && errors.password && (
+              <span className="field-error">{errors.password}</span>
+            )}
             {formData.password && !isLoading && (
               <>
                 <div className="password-strength">
@@ -214,22 +349,52 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUpSuccess }) => {
             <label htmlFor="confirmPassword">Confirm Password</label>
             <div className={`input-wrapper ${touched.confirmPassword && errors.confirmPassword ? 'error' : ''}`}>
               <Lock className="input-icon" />
-              <input type={showConfirmPassword ? 'text' : 'password'} id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" value={formData.confirmPassword} onChange={handleChange} onBlur={() => handleBlur('confirmPassword')} disabled={isLoading}/>
-              <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label={showConfirmPassword ? 'Hide password' : 'Show password'} disabled={isLoading}> {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}</button>
+              <input 
+                type={showConfirmPassword ? 'text' : 'password'} 
+                id="confirmPassword" 
+                name="confirmPassword" 
+                placeholder="Confirm your password" 
+                value={formData.confirmPassword} 
+                onChange={handleChange} 
+                onBlur={() => handleBlur('confirmPassword')} 
+                disabled={isLoading}
+              />
+              <button 
+                type="button" 
+                className="password-toggle" 
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'} 
+                disabled={isLoading}
+              > 
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
-            {touched.confirmPassword && errors.confirmPassword && (  <span className="field-error">{errors.confirmPassword}</span>)}
+            {touched.confirmPassword && errors.confirmPassword && (  
+              <span className="field-error">{errors.confirmPassword}</span>
+            )}
           </div>
+          
           {/* Sign Up Button */}
-          <button type="submit" className="btn-signup"disabled={isLoading}>{isLoading ? (
-              <> <span className="spinner"></span>Creating Account...</>
+          <button type="submit" className="btn-signup" disabled={isLoading}>
+            {isLoading ? (
+              <> 
+                <span className="spinner"></span>
+                Creating Account...
+              </>
             ) : (
-              <><UserPlus className="btn-icon" />Create Account</>
+              <>
+                <UserPlus className="btn-icon" />
+                {invitationData ? 'Create Account & Accept Invitation' : 'Create Account'}
+              </>
             )}
           </button>
+          
           {/* Sign In Link */}
           <div className="signin-link">
             Already have an account?
-            <button type="button" onClick={handleSignInClick}disabled={isLoading}>Sign in</button>
+            <button type="button" onClick={handleSignInClick} disabled={isLoading}>
+              Sign in
+            </button>
           </div>
         </form>
       </div>

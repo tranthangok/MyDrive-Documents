@@ -377,15 +377,19 @@ router.put('/:id', checkDocumentPermission('edit'), async (req, res) => {
     if (!currentDoc) {
       return res.status(404).json({ error: 'Document not found' });
     }
-    // check conflict based on time update
-    const serverLastModified = currentDoc.updatedAt.getTime();
-    if (lastModified && serverLastModified > lastModified) {
-      // Conflict detected - document updated by another user
-      return res.status(409).json({ 
-        error: 'Conflict',
-        message: 'This document has been modified by another user',
-        serverContent: currentDoc.content
-      });
+    
+    // Chỉ kiểm tra conflict nếu có lastModified (không phải document mới)
+    if (lastModified) {
+      const serverLastModified = currentDoc.updatedAt.getTime();
+      if (serverLastModified > lastModified) {
+        // Conflict detected - document updated by another user
+        return res.status(409).json({ 
+          error: 'Conflict',
+          message: 'This document has been modified by another user',
+          serverContent: currentDoc.content,
+          serverTitle: currentDoc.title // Thêm dòng này
+        });
+      }
     }
     // check content changes or not
     const hasContentChanged = content !== undefined && content !== currentDoc.content;
