@@ -324,7 +324,6 @@ const Dashboard: React.FC = () => {
     const token = getToken();
     if (!token) return;
     const isDocument = 'title' in itemToDelete;
-    // endpoint seperately for document or folder
     const url = isDocument 
       ? `${import.meta.env.VITE_BACKEND_URL}/api/trash/document`
       : `${import.meta.env.VITE_BACKEND_URL}/api/trash/folder`;
@@ -338,6 +337,7 @@ const Dashboard: React.FC = () => {
         [isDocument ? 'documentId' : 'folderId']: itemToDelete._id
       })
     });
+    const data = await response.json();
     if (response.ok) {
       if (isDocument) {
         setDocuments(prev => prev.filter(d => d._id !== itemToDelete._id));
@@ -346,12 +346,20 @@ const Dashboard: React.FC = () => {
       }
       setShowDeleteModal(false);
       setItemToDelete(null);
-      // message
       setSuccessMessage('Item moved to trash successfully');
       setShowSuccessModal(true);
     } else {
-      const data = await response.json();
-      alert(data.error || 'Failed to move to trash');
+      // confirm delete
+      setShowDeleteModal(false);
+      setItemToDelete(null);
+      if (response.status === 404) {
+        setErrorMessage('Document not found or you do not have permission to delete this file.');
+      } else if (response.status === 403) {
+        setErrorMessage('You do not have permission to delete this file.');
+      } else {
+        setErrorMessage(data.error || 'Failed to move to trash');
+      }
+      setShowErrorModal(true);
     }
   };
 
@@ -807,8 +815,7 @@ const Dashboard: React.FC = () => {
                 {/* Actions */}
                 <div className="cell action-cell" data-label="Actions">
                   {isDocument && (
-                    <>
-                      <button className="icon-btn" onClick={() => handleDownloadPDF(item as Document)} title="Download PDF">
+                    <><button className="icon-btn" onClick={() => handleDownloadPDF(item as Document)} title="Download PDF">
                         <Download size={18} />
                       </button>
                       <button className="icon-btn" onClick={() => handleExportPPT(item as Document)} title="Export to PowerPoint">
@@ -826,17 +833,10 @@ const Dashboard: React.FC = () => {
                       <Edit size={18} />
                     </button>
                   )}
+                  <button className="icon-btn" onClick={() => handleMoveClick(item)} title="Move to folder">
+                    <MoveRight size={18} />
+                  </button>
                   {(!permission || permission === 'edit') && (
-                    <button className="icon-btn" onClick={() => handleMoveClick(item)} title="Move to folder">
-                      <MoveRight size={18} />
-                    </button>
-                  )}
-                  {(!permission || permission === 'edit') && isDocument && (item as Document).owner === JSON.parse(localStorage.getItem('user') || '{}').id && (
-                    <button className="icon-btn delete" onClick={() => handleDeleteClick(item)} title="Delete">
-                      <Trash2 size={18} />
-                    </button>
-                  )}
-                  {!isDocument && (!permission || permission === 'edit') && (item as Folder).owner === JSON.parse(localStorage.getItem('user') || '{}').id && (
                     <button className="icon-btn delete" onClick={() => handleDeleteClick(item)} title="Delete">
                       <Trash2 size={18} />
                     </button>

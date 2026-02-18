@@ -608,23 +608,34 @@ body.dark-mode .theme-toggle:hover {
   border: none;
   color: #999;
   cursor: pointer;
-  padding: 0;
+  padding: 0.25rem;
   border-radius: 6px;
   transition: all 0.2s ease;
-  display: flex;
+  display: flex !important; 
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px; 
   font-size: 18px;
   font-weight: bold;
   line-height: 1;
+  background-color: transparent; 
+  margin-left: 8px; 
 }
 
 .remove-share:hover {
   background: rgba(255, 77, 79, 0.15);
   color: #ff4d4f;
   transform: scale(1.1);
+}
+
+.dark .remove-share {
+  color: #b0b0b0;
+}
+
+.dark .remove-share:hover {
+  background: rgba(255, 77, 79, 0.25);
+  color: #ff8080;
 }
 
 /* Share Link Section */

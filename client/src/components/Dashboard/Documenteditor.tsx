@@ -584,7 +584,7 @@ const DocumentEditor: React.FC = () => {
                             {user.permission}
                           </span>
                         </div>
-                        {isOwner && (<button className="remove-share" onClick={() => handleRemoveShare(user.id)} title="Remove access">X</button>)}
+                        {isOwner && (<button className="remove-share" onClick={() => handleRemoveShare(user.id)} title="Remove access" aria-label="Remove access">✕</button>)}
                       </div>
                     ))}
                   </div>
