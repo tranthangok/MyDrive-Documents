@@ -120,8 +120,6 @@ const Profile: React.FC = () => {
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to update name' });
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Server error' });
     } finally {
       setIsLoading(false);
     }
@@ -165,8 +163,6 @@ const Profile: React.FC = () => {
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to update password' });
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Server error' });
     } finally {
       setIsLoading(false);
     }

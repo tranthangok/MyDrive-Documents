@@ -158,10 +158,10 @@ const AcceptInvitation: React.FC = () => {
         <div className="invitation-card signup-card">
           <div className="invitation-header">
             <Mail size={32} className="invitation-icon" />
-            <h2>You're Invited!</h2>
+            <h2>You are Invited!</h2>
             <p className="invitation-message">
               <strong>{invitation?.email}</strong> has been invited to collaborate on 
-              <strong> "{invitation?.documentTitle}"</strong>
+              <strong>{invitation?.documentTitle}</strong>
             </p>
           </div>
 

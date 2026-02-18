@@ -162,8 +162,6 @@ const Dashboard: React.FC = () => {
         setDocuments(docsData.documents || []);
       }
       setError('');
-    } catch (err: any) {
-      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -413,7 +411,6 @@ const Dashboard: React.FC = () => {
       })
     });
     if (response.ok) {
-      const data = await response.json();
       fetchCurrentFolder();
       
       setClonedItemName(finalTitle);

@@ -184,7 +184,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           </button>
 
           <div className="signup-link">
-            Don't have an account?
+            Do not have an account?
             <button type="button" onClick={handleSignUpClick} disabled={isLoading}>Sign up</button>
           </div>
         </form>

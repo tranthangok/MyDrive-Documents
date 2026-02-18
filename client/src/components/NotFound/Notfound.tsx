@@ -24,7 +24,7 @@ const NotFound: React.FC<NotFoundProps> = ({ isAuthenticated = false }) => {
         <h1 className="not-found-title">404</h1>
         <h2 className="not-found-subtitle">Page Not Found</h2>
         <p className="not-found-text">
-          The page you are looking for doesn't exist.
+          The page you are looking for does not exist.
         </p>
         <button className="btn-return-home"onClick={handleReturnHome}>
           <Home size={18} />
