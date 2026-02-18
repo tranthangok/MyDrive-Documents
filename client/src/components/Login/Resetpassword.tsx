@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, Eye, EyeOff, Key } from 'lucide-react';
-import './ResetPassword.css';
+import './Resetpassword.css';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();

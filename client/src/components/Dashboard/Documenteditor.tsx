@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css';
 import { pdf } from '@react-pdf/renderer';
 import DocumentPDF from './Documentpdf';
 import { exportToPPT } from './Documentppt';
-import './DocumentEditor.css';
+import './Documenteditor.css';
 import { Save, Download, ArrowLeft, Sun, Moon, X, Presentation, Share2, Copy, Eye, Edit3, Link2, Users, AlertCircle, Mail,CheckCircle, Clock, Send} from 'lucide-react';
 
 const modules = {
