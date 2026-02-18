@@ -13,9 +13,13 @@ import Profile from './src/components/Navbar/Profile';
 import ResetPassword from './src/components/Login/Resetpassword';
 import Trash from './src/components/Dashboard/Trash';
 import './App.css';
-
+// Define types
+interface User {
+  name: string;
+  email: string;
+}
 // Allow only unauthenticated users to access the route
-const GuestRoute = ({ children, isAuthenticated, isLoading }: { children: React.ReactNode, isAuthenticated: boolean, isLoading: boolean }) => {
+const GuestRoute = ({ children, isAuthenticated, isLoading }: { children: React.ReactNode; isAuthenticated: boolean; isLoading: boolean }) => {
   if (isLoading) {
     return <div className="loading-spinner">Loading...</div>;
   }
@@ -26,7 +30,7 @@ const GuestRoute = ({ children, isAuthenticated, isLoading }: { children: React.
 };
 
 // Allow only authenticated users to access the route
-const ProtectedRoute = ({ children, isAuthenticated, isLoading }: { children: React.ReactNode, isAuthenticated: boolean, isLoading: boolean }) => {
+const ProtectedRoute = ({ children, isAuthenticated, isLoading }: { children: React.ReactNode; isAuthenticated: boolean; isLoading: boolean }) => {
   if (isLoading) {
     return <div className="loading-spinner">Loading...</div>;
   }
@@ -35,19 +39,11 @@ const ProtectedRoute = ({ children, isAuthenticated, isLoading }: { children: Re
   }
   return <>{children}</>;
 };
-
-// Public route cho shared documents và invitations (không cần đăng nhập)
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
-};
-
 function AppContent() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
-
-  // Kiểm tra token và fetch user info khi app load
+  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -58,7 +54,6 @@ function AppContent() {
       setIsLoading(false);
     }
   }, []);
-
   const fetchUserInfo = async (token: string) => {
     try {
       const response = await fetch('http://localhost:5000/api/auth/user', {
@@ -84,29 +79,22 @@ function AppContent() {
       setIsLoading(false);
     }
   };
-
-  const handleLogin = async () => {
+  const handleLogin = () => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoading(true);
-      const success = await fetchUserInfo(token);
-      if (success) {
-        navigate('/dashboard');
-      }
+      fetchUserInfo(token);
     }
   };
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUser(null);
     navigate('/');
   };
-
   const handleProfileClick = () => {
     navigate('/profile');
   };
-
   const handleBrandClick = () => {
     if (isAuthenticated) {
       navigate('/dashboard');
@@ -114,7 +102,6 @@ function AppContent() {
       navigate('/');
     }
   };
-
   if (isLoading) {
     return (
       <div className="app-loading">
@@ -157,22 +144,20 @@ function AppContent() {
           path="/signup" 
           element={
             <GuestRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-              <SignUp/>
+              <SignUp />
             </GuestRoute>
           } 
         />
-        
-        {/* Public Routes - không cần đăng nhập */}
+        {/* Public Routes - no need authenticat */}
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/shared/:id" element={<SharedDocument />} />
         <Route path="/invitation/:token" element={<AcceptInvitation />} />
-        
         {/* Protected Routes - only for authenticated users */}
         <Route 
           path="/dashboard" 
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-              <Dashboard/>
+              <Dashboard />
             </ProtectedRoute>
           } 
         />
@@ -180,7 +165,7 @@ function AppContent() {
           path="/document/:id" 
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-              <DocumentEditor/>
+              <DocumentEditor />
             </ProtectedRoute>
           } 
         />
@@ -188,7 +173,7 @@ function AppContent() {
           path="/profile" 
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-              <Profile/>
+              <Profile />
             </ProtectedRoute>
           } 
         />
@@ -196,11 +181,10 @@ function AppContent() {
           path="/trash" 
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-              <Trash/>
+              <Trash />
             </ProtectedRoute>
           } 
         />
-        
         {/* 404 Route */}
         <Route path="*" element={<NotFound isAuthenticated={isAuthenticated} />} />
       </Routes>

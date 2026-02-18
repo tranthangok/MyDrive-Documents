@@ -59,11 +59,11 @@ const DocumentEditor: React.FC = () => {
   const [sharePermission, setSharePermission] = useState<'view' | 'edit'>('view');
   const [shareLink, setShareLink] = useState('');
   const [copied, setCopied] = useState(false);
-  const [inviteSent, setInviteSent] = useState(false);
+  //const [inviteSent, setInviteSent] = useState(false);
   
   const [activeEditors, setActiveEditors] = useState<string[]>([]);
   const [showConflictModal, setShowConflictModal] = useState(false);
-  const [conflictUser, setConflictUser] = useState('');
+  //const [conflictUser, setConflictUser] = useState('');
   const [serverContent, setServerContent] = useState('');
   const [serverTitle, setServerTitle] = useState('');
   
@@ -76,7 +76,7 @@ const DocumentEditor: React.FC = () => {
   const [title, setTitle] = useState('Untitled Document');
   const [content, setContent] = useState('');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [isNewDocument, setIsNewDocument] = useState(false);
+  //const [isNewDocument, setIsNewDocument] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   // Track last saved version for conflict detection
@@ -122,7 +122,7 @@ const DocumentEditor: React.FC = () => {
         clearInterval(editorsInterval);
       };
     } else {
-      setIsNewDocument(true);
+      //setIsNewDocument(true);
       setLoading(false);
     }
   }, [id]);
@@ -179,7 +179,7 @@ const DocumentEditor: React.FC = () => {
           serverTitle !== lastSavedVersion.title;
           
         if (hasServerChanges && serverLastModified > localLastModified && !saving) {
-          setConflictUser('Another user');
+          //setConflictUser('Another user');
           setServerContent(serverContent);
           setServerTitle(serverTitle);
           setShowConflictModal(true);
@@ -300,7 +300,7 @@ const DocumentEditor: React.FC = () => {
       if (response.status === 409) {
         // Conflict detected
         const data = await response.json();
-        setConflictUser('Another user');
+        //setConflictUser('Another user');
         setServerContent(data.serverContent);
         setServerTitle(data.serverTitle || title);
         setShowConflictModal(true);
@@ -389,7 +389,7 @@ const DocumentEditor: React.FC = () => {
     });
     if (response.ok) {
       setShareEmail('');
-      setInviteSent(true);
+      //setInviteSent(true);
       setSuccessMessage(`Invitation sent to ${shareEmail}`);
       setShowSuccessModal(true);
       setPendingInvitations([
@@ -401,7 +401,7 @@ const DocumentEditor: React.FC = () => {
           sentAt: new Date()
         }
       ]);
-      setTimeout(() => setInviteSent(false), 3000);
+      //setTimeout(() => setInviteSent(false), 3000);
     } else {
       const data = await response.json();
       alert(data.error || 'Failed to send invitation');

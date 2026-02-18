@@ -983,14 +983,14 @@ const Dashboard: React.FC = () => {
             <div className="modal-body">
               <p>Select destination folder:</p>
               <div className="folder-list">
-                <div className={`folder-list-item ${selectedItem.folder === null ? 'active' : ''}`}onClick={() => handleMoveToFolder(null)}>
+                <div className={`folder-list-item ${(selectedItem as any).folder === null ? 'active' : ''}`} onClick={() => handleMoveToFolder(null)}>
                   <Home size={16} />
                   <span>My Drive (Root)</span>
                 </div>
                 {allFolders
                   .filter(f => f._id !== ('_id' in selectedItem ? selectedItem._id : ''))
                   .map(folder => (
-                    <div key={folder._id} className={`folder-list-item ${selectedItem.folder === folder._id ? 'active' : ''}`}  onClick={() => handleMoveToFolder(folder._id)}>
+                    <div key={folder._id} className={`folder-list-item ${(selectedItem as any).folder === null ? 'active' : ''}`} onClick={() => handleMoveToFolder(folder._id)}>
                       <Folder size={16} />
                       <span>{folder.name}</span>
                     </div>
