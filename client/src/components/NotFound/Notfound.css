@@ -1,0 +1,57 @@
+.not-found-container {
+  min-height: calc(100vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0099FF;
+  padding: 2rem;
+}
+
+.not-found-card {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.not-found-title {
+  font-size: 6rem;
+  font-weight: bold;
+  color: #0099FF;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.not-found-subtitle {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.not-found-text {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.btn-return-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: #0099FF;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-return-home:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
