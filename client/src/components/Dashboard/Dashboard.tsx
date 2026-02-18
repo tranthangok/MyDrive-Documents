@@ -636,14 +636,26 @@ const Dashboard: React.FC = () => {
         })
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         setFolders(prev => [...prev, data.folder]);
         setShowNewFolderModal(false);
         setNewFolderName('');
+        setSuccessMessage('Folder created successfully!');
+        setShowSuccessModal(true);
+      } else {
+        if (response.status === 400) {
+          setErrorMessage(data.error || 'A folder with this name already exists in this location.');
+        } else {
+          setErrorMessage(data.error || 'Failed to create folder');
+        }
+        setShowErrorModal(true);
       }
     } catch (err) {
       console.error('Failed to create folder:', err);
+      setErrorMessage('Failed to create folder. Please try again.');
+      setShowErrorModal(true);
     }
   };
 
@@ -795,7 +807,8 @@ const Dashboard: React.FC = () => {
                 {/* Actions */}
                 <div className="cell action-cell" data-label="Actions">
                   {isDocument && (
-                    <><button className="icon-btn" onClick={() => handleDownloadPDF(item as Document)} title="Download PDF">
+                    <>
+                      <button className="icon-btn" onClick={() => handleDownloadPDF(item as Document)} title="Download PDF">
                         <Download size={18} />
                       </button>
                       <button className="icon-btn" onClick={() => handleExportPPT(item as Document)} title="Export to PowerPoint">
@@ -813,10 +826,17 @@ const Dashboard: React.FC = () => {
                       <Edit size={18} />
                     </button>
                   )}
-                  <button className="icon-btn" onClick={() => handleMoveClick(item)} title="Move to folder">
-                    <MoveRight size={18} />
-                  </button>
                   {(!permission || permission === 'edit') && (
+                    <button className="icon-btn" onClick={() => handleMoveClick(item)} title="Move to folder">
+                      <MoveRight size={18} />
+                    </button>
+                  )}
+                  {(!permission || permission === 'edit') && isDocument && (item as Document).owner === JSON.parse(localStorage.getItem('user') || '{}').id && (
+                    <button className="icon-btn delete" onClick={() => handleDeleteClick(item)} title="Delete">
+                      <Trash2 size={18} />
+                    </button>
+                  )}
+                  {!isDocument && (!permission || permission === 'edit') && (item as Folder).owner === JSON.parse(localStorage.getItem('user') || '{}').id && (
                     <button className="icon-btn delete" onClick={() => handleDeleteClick(item)} title="Delete">
                       <Trash2 size={18} />
                     </button>

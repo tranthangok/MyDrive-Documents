@@ -284,7 +284,7 @@ const DocumentEditor: React.FC = () => {
 
       const isNew = id === 'new';
       const url = isNew ? `${import.meta.env.VITE_BACKEND_URL}/api/documents` : `${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}`;
-      // lastModified and not new document
+      // only last modified when new document
       const body: any = { title, content };
       if (!isNew && lastSavedVersion.updatedAt) {
         body.lastModified = lastSavedVersion.updatedAt.getTime();
@@ -573,10 +573,7 @@ const DocumentEditor: React.FC = () => {
               {/* People with access */}
               {sharedUsers.length > 0 && (
                 <div className="share-section">
-                  <h3>
-                    <Users size={20} />People with access
-                  </h3>
-                  
+                  <h3><Users size={20}/>People with access</h3>
                   <div className="shared-users-list">
                     {sharedUsers.map(user => (
                       <div key={user.id} className="shared-user-item">
@@ -587,11 +584,7 @@ const DocumentEditor: React.FC = () => {
                             {user.permission}
                           </span>
                         </div>
-                        {isOwner && (
-                          <button className="remove-share" onClick={() => handleRemoveShare(user.id)} title="Remove access">
-                            <X size={16} />
-                          </button>
-                        )}
+                        {isOwner && (<button className="remove-share" onClick={() => handleRemoveShare(user.id)} title="Remove access">X</button>)}
                       </div>
                     ))}
                   </div>
