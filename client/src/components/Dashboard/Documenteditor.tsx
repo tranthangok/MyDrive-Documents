@@ -284,18 +284,18 @@ const DocumentEditor: React.FC = () => {
 
       const isNew = id === 'new';
       const url = isNew ? `${import.meta.env.VITE_BACKEND_URL}/api/documents` : `${import.meta.env.VITE_BACKEND_URL}/api/documents/${id}`;
-
+      // lastModified and not new document
+      const body: any = { title, content };
+      if (!isNew && lastSavedVersion.updatedAt) {
+        body.lastModified = lastSavedVersion.updatedAt.getTime();
+      }
       const response = await fetch(url, {
         method: isNew ? 'POST' : 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
-          title, 
-          content,
-          lastModified: lastSavedVersion.updatedAt?.getTime() // Send timestamp for conflict check
-        })
+        body: JSON.stringify(body)
       });
       if (response.status === 409) {
         // Conflict detected
