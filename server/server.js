@@ -28,4 +28,20 @@ app.get('/', (req, res) => { res.json({ message: 'Server is running' }); });
 // Error handler
 app.use((err, req, res, next) => { console.error('Server error:', err); res.status(500).json({ error: err.message }); });
 const PORT = process.env.PORT || 5000;
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('Connected to MongoDB');
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('MongoDB connection failed:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
+
 app.listen(PORT, () => { console.log(`Server running on port ${PORT}`); });
